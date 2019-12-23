@@ -1,3 +1,45 @@
 body {
   font-family: sans-serif;
 }
+
+.turn {
+  width: 100%;
+  text-align: center;
+  background-color: navy;
+  color: yellow;
+  padding: 5px;
+}
+.card {
+  width: 50px;
+  height: 50px;
+  margin: 2px;
+  background-color: aqua;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: rebeccapurple;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+  border: none;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  background-color: lawngreen;
+}
+
+.win {
+  padding: 20px;
+  background-color: chartreuse;
+  font-weight: bold;
+}
+
+#app {
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: navy;
+  padding: 20px;
+}
