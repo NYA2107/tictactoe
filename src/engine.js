@@ -2,7 +2,6 @@ class Game {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     this.toggle = true;
-    this.init();
     this.counter = 0;
   }
   init() {
@@ -40,18 +39,34 @@ class Game {
     let row = e.target.row;
     let column = e.target.column;
     if (this.arrBoard[row][column] === "") {
+      if (this.toggle) {
+        this.arrBoard[row][column] = "X";
+      } else {
+        this.arrBoard[row][column] = "O";
+      }
       this.counter++;
+      this.toggle = !this.toggle;
+      this.renderBoard();
+      this.checkEnd();
     }
-    if (this.toggle) {
-      this.arrBoard[row][column] = "X";
+  }
+
+  checkEnd() {
+    if (this.counter < 9) {
+      let check = this.checkAllCard();
+      if (check === "X" || check === "O") {
+        let text = `
+          <div class="win">Player ${check} Win</div>
+          <div onclick="location.reload()" class="reset">Play Again</div>
+        `;
+        this.container.innerHTML = text;
+      }
     } else {
-      this.arrBoard[row][column] = "O";
-    }
-    this.toggle = !this.toggle;
-    this.renderBoard();
-    this.checkAllCard();
-    if (this.counter === 9) {
-      this.container.innerHTML = `<div class="win">Draw</div>`;
+      let text = `
+        <div class="win">Draw</div>
+        <div onclick="location.reload()" class="reset">Play Again</div>
+      `;
+      this.container.innerHTML = text;
     }
   }
 
@@ -61,37 +76,25 @@ class Game {
     let columnValue = allValue.column;
     let diagonalUp = allValue.diagonalUp;
     let diagonalDown = allValue.diagonalDown;
-    rowValue.forEach(v => {
-      let ev = this.evaluate(v);
+    for (let i = 0; i < rowValue.length; i++) {
+      let ev = this.evaluate(rowValue[i]);
       if (ev.condition) {
-        this.container.innerHTML = `<div class="win">player ${
-          ev.firstValue
-        } WIN</div>`;
-        return true;
+        return ev.firstValue;
       }
-    });
-    columnValue.forEach(v => {
-      let ev = this.evaluate(v);
-      if (ev.condition) {
-        this.container.innerHTML = `<div class="win">player ${
-          ev.firstValue
-        } WIN</div>`;
-        return true;
+    }
+    for (let i = 0; i < columnValue.length; i++) {
+      let evC = this.evaluate(columnValue[i]);
+      if (evC.condition) {
+        return evC.firstValue;
       }
-    });
+    }
     let evUp = this.evaluate(diagonalUp);
     if (evUp.condition) {
-      this.container.innerHTML = `<div class="win">player ${
-        evUp.firstValue
-      } WIN</div>`;
-      return true;
+      return evUp.firstValue;
     }
     let evDown = this.evaluate(diagonalDown);
     if (evDown.condition) {
-      this.container.innerHTML = `<div class="win">player ${
-        evDown.firstValue
-      } WIN</div>`;
-      return true;
+      return evDown.firstValue;
     }
     return false;
   }
@@ -101,50 +104,43 @@ class Game {
     value.forEach(v => {
       let isO = v === "O";
       let isX = v === "X";
+      let isNull = v === "";
       switch (state) {
         case 1:
           if (isO) {
             state = 2;
           } else if (isX) {
             state = 5;
-          } else {
+          } else if (isNull) {
             state = 7;
           }
           break;
         case 2:
           if (isO) {
             state = 3;
-          } else if (isX) {
-            state = 1;
-          } else {
+          } else if (isX || isNull) {
             state = 7;
           }
           break;
         case 3:
           if (isO) {
             state = 4;
-          } else if (isX) {
-            state = 1;
-          } else {
+          } else if (isX || isNull) {
             state = 7;
           }
           break;
         case 5:
-          if (isO) {
-            state = 1;
+          if (isO || isNull) {
+            state = 7;
           } else if (isX) {
             state = 6;
-          } else {
-            state = 7;
           }
           break;
         case 6:
-          if (isO) {
-            state = 1;
+          if (isO || isNull) {
+            state = 7;
           } else if (isX) {
             state = 4;
-          } else {
-            state = 7;
           }
           break;
         case 7:
@@ -154,7 +150,6 @@ class Game {
           break;
       }
     });
-
     if (state === 4) {
       return {
         condition: true,
@@ -180,7 +175,6 @@ class Game {
         }
         if (i === this.arrBoard.length - 1 - j) {
           tempDiagonalUp.push(this.arrBoard[j][i]);
-          // console.log(j, i);
         }
       }
     }

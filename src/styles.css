@@ -35,6 +35,22 @@ body {
   font-weight: bold;
 }
 
+.reset {
+  margin: 10px;
+  padding: 10px;
+  background-color: aliceblue;
+  color: navy;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.1s ease-in;
+  border-radius: 2px;
+}
+
+.reset:hover {
+  transform: scale(1.1);
+  background-color: yellow;
+}
+
 #app {
   width: 200px;
   display: flex;
